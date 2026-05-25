@@ -20,10 +20,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
      */
 
-    fun addTask(name: String, duration: Int) {
+   /* fun addTask(name: String, duration: Int) {
         viewModelScope.launch {
             val newTask = Task(name = name, defaultDurationMinutes = duration)
             taskDao.insertTask(newTask)
         }
     }
+
+    */
 }
