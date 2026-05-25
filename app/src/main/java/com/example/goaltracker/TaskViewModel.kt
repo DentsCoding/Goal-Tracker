@@ -9,14 +9,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
-    private val taskDao = AppDatabase.getDatabase(application).taskDao()
+    //private val taskDao = AppDatabase.getDatabase(application).taskDao()
 
-    val tasksState: StateFlow<List<Task>> = taskDao.getAllTasks()
+    /* val tasksState: StateFlow<List<Task>> = taskDao.getAllTasks()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+     */
 
     fun addTask(name: String, duration: Int) {
         viewModelScope.launch {
