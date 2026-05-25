@@ -1,0 +1,60 @@
+1. The Design on the "Today" Screen
+Instead of ordering the daily list strictly by chronological minutes (which makes a delayed task feel like a failure), the tasks are grouped into Time Blocks defined by the anchors, with the suggested time acting as a subtle guide.
+
+The Card Layout
+Each task card in the vertical list will feature a two-line contextual header:
+
+Primary text (The Anchor): Bold and prominent (e.g., ☕ After Morning Coffee).
+
+Secondary text (The Suggested Time): A lighter, smaller font just below or beside it (e.g., Target: 9:30 AM).
+
+Dynamic Re-ordering (Smart Sorting)
+The app should automatically sort the anchor groups based on the suggested times.
+
+If "☀️ Morning Routine" has a suggested time of 7:30 AM, and "☕ After Coffee" is set for 9:30 AM, the Morning Routine group sits gracefully at the top.
+
+The Psychological Buffer: If it's 9:45 AM and "After Coffee" isn't checked yet, the app does not turn the text bright red or flash "OVERDUE" (which triggers anxiety). Instead, it remains calm. The suggestion is there as an intention, not a strict deadline.
+
+2. How the User Sets This Up (The UX Flow)
+When creating a repeatable practice in the Journeys tab, the time/anchor picker should feel cohesive, not like two separate, annoying forms.
+
+We can design a sleek, two-step interactive row:
+
+Step 1: Choose the Anchor (The "When"): A horizontal scrolling carousel of beautiful icon chips (e.g., ☀️ Morning, ☕ After Coffee, 🍔 Lunch Break, 🚗 Commute, 🌙 Wind Down).
+
+Step 2: Refine with Time (The "Around What Time"): Once an anchor is tapped, a small time-picker pill expands next to it, defaulting to a logical time for that anchor (e.g., selecting ☕ After Coffee suggests 9:00 AM). The user can tap it to tweak the specific hour.
+
+The resulting sentence reads naturally in the UI:
+
+"I want to practice this [ ☕ After Coffee ] around [ 9:30 AM ]."
+
+3. Updated "Today" Screen Visual Hierarchy
+With this addition, here is how the visual stack of your main dashboard looks from top to bottom:
+
+1. The Horizon Strip (Calendar Header)
+A clean, single-row week view. Today is actively highlighted.
+
+2. The Gate (Active One-Shot Milestone)
+A single, high-contrast block.
+
+Example: "Push Beta Build to Play Store"
+
+Subtext: ⚠️ Postponing this will shift your "Launch App" timeline.
+
+3. The Engine (Anchor-Based Practices)
+Group 1: ☀️ Morning Routine (Target: 8:00 AM)
+
+[ ] Read 10 pages of documentation
+
+Group 2: ☕ After Morning Coffee (Target: 9:30 AM)
+
+[ ] Code for 45 minutes
+
+Group 3: 🌙 Wind Down (Target: 10:00 PM)
+
+[ ] Review tomorrow's focus milestone
+
+Moving Forward
+Since you want to hold off on the reflection page for now, you have a rock-solid blueprint for the core identity of the app: Execution (Today) driven by Anchors + Suggested Times, and Strategy (Journeys) driven by S.M.A.R.T. cascading milestones.
+
+Are you ready to dive into the technical implementation—specifically how to structure the Room Database entities to support these anchor groups and user-defined suggested times?
