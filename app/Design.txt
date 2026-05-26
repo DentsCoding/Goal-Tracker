@@ -1,0 +1,73 @@
+The Updated App Blueprint
+1. The Goal (The Vision)
+Properties:
+
+id: Unique number identifier.
+
+title: Text (e.g., "Learn Android Development").
+
+description: Text (e.g., "Build an app from scratch").
+
+creationDate: The date the goal was started.
+
+2. The Milestone (The Phase)
+Relationship: Child of a Goal.
+
+Properties:
+
+id: Unique number identifier.
+
+goalId: Points directly back to its parent Goal.
+
+title: Text (e.g., "Phase 1: Database Setup").
+
+targetDate: The ideal date the user wants this entire phase completed.
+
+sequenceNumber: An integer (1, 2, 3) to keep the phases in chronological order.
+
+3. The Task (The Template / Definition)
+Relationship: Child of a Milestone.
+
+Properties:
+
+id: Unique number identifier.
+
+milestoneId: Points directly back to its parent Milestone.
+
+title: Text (e.g., "Practice Kotlin").
+
+isRepeatable: Yes/No switch.
+
+anchor: Text string (e.g., "After Morning Coffee").
+
+suggestedTime: Target hour text (e.g., "09:30 AM").
+
+suggestedDuration: An integer representing minutes (e.g., 30 or 45). This can be optional, as some one-shot tasks (like "Buy a domain") don't need a duration, while repeatable practices (like "Code") thrive on them.
+
+4. The Task Instance (The Daily Reality Log)
+Relationship: Child of a Task.
+
+Properties:
+
+id: Unique number identifier.
+
+taskId: Points back to the master Task definition.
+
+date: The specific calendar day this checkbox belongs to.
+
+status: Pending, Completed, Skipped, or Pushed to Tomorrow.
+
+How This Looks on the "Today" Screen View
+Because the Task Instance links back to the Task Template, Jetpack Compose can pull the title, anchor, suggestedTime, and your new suggestedDuration to build a beautifully informative card.
+
+Your UI list item can now look like this:
+
+[ ] Practice Kotlin
+
+☕ After Morning Coffee (Around 9:30 AM)
+
+⏱️ Duration: 30 mins
+
+This gives the user the perfect, friction-free snapshot of their commitment the moment they open the app.
+
+With this final piece of the data puzzle locked in, your architectural design document is officially complete. Are you ready to move on to setting up your Android project, or is there any other tracking property you want to add first?
