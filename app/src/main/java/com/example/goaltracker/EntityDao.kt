@@ -16,16 +16,19 @@ interface GoalDao{
     fun getAllGoals(): Flow<List<GoalEntity>>
 }
 
+@Dao
 interface MilestoneDao {
     @Insert
     suspend fun createMilestone(milestone: MilestoneEntity)
 }
 
+@Dao
 interface TaskTemplateDao {
     @Insert
     suspend fun createTaskTemplate(taskTemplate: TaskTemplateEntity)
 }
 
+@Dao
 interface TaskDao {
     @Insert
     suspend fun createTask(task: TaskEntity)
