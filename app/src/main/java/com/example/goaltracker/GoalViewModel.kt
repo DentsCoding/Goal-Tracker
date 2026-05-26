@@ -8,24 +8,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TaskViewModel(application: Application) : AndroidViewModel(application) {
-    //private val taskDao = AppDatabase.getDatabase(application).taskDao()
+class GoalViewModel(application: Application) : AndroidViewModel(application) {
 
-    /* val tasksState: StateFlow<List<Task>> = taskDao.getAllTasks()
+    private val goalDao = AppDatabase.getDatabase(application).goalDao()
+
+    val goalState: StateFlow<List<GoalEntity>> = goalDao.getAllGoals()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 
-     */
+    private val title = ""
+    private val description = ""
 
-   /* fun addTask(name: String, duration: Int) {
+    fun addGoal(title: String, description: String) {
         viewModelScope.launch {
-            val newTask = Task(name = name, defaultDurationMinutes = duration)
-            taskDao.insertTask(newTask)
+            val newGoal = GoalEntity(title = title, description = description)
+            goalDao.createGoal(newGoal)
         }
     }
-
-    */
 }
