@@ -1,60 +1,73 @@
-1. The Design on the "Today" Screen
-Instead of ordering the daily list strictly by chronological minutes (which makes a delayed task feel like a failure), the tasks are grouped into Time Blocks defined by the anchors, with the suggested time acting as a subtle guide.
+The Updated App Blueprint
+1. The Goal (The Vision)
+Properties:
 
-The Card Layout
-Each task card in the vertical list will feature a two-line contextual header:
+id: Unique number identifier.
 
-Primary text (The Anchor): Bold and prominent (e.g., ☕ After Morning Coffee).
+title: Text (e.g., "Learn Android Development").
 
-Secondary text (The Suggested Time): A lighter, smaller font just below or beside it (e.g., Target: 9:30 AM).
+description: Text (e.g., "Build an app from scratch").
 
-Dynamic Re-ordering (Smart Sorting)
-The app should automatically sort the anchor groups based on the suggested times.
+creationDate: The date the goal was started.
 
-If "☀️ Morning Routine" has a suggested time of 7:30 AM, and "☕ After Coffee" is set for 9:30 AM, the Morning Routine group sits gracefully at the top.
+2. The Milestone (The Phase)
+Relationship: Child of a Goal.
 
-The Psychological Buffer: If it's 9:45 AM and "After Coffee" isn't checked yet, the app does not turn the text bright red or flash "OVERDUE" (which triggers anxiety). Instead, it remains calm. The suggestion is there as an intention, not a strict deadline.
+Properties:
 
-2. How the User Sets This Up (The UX Flow)
-When creating a repeatable practice in the Journeys tab, the time/anchor picker should feel cohesive, not like two separate, annoying forms.
+id: Unique number identifier.
 
-We can design a sleek, two-step interactive row:
+goalId: Points directly back to its parent Goal.
 
-Step 1: Choose the Anchor (The "When"): A horizontal scrolling carousel of beautiful icon chips (e.g., ☀️ Morning, ☕ After Coffee, 🍔 Lunch Break, 🚗 Commute, 🌙 Wind Down).
+title: Text (e.g., "Phase 1: Database Setup").
 
-Step 2: Refine with Time (The "Around What Time"): Once an anchor is tapped, a small time-picker pill expands next to it, defaulting to a logical time for that anchor (e.g., selecting ☕ After Coffee suggests 9:00 AM). The user can tap it to tweak the specific hour.
+targetDate: The ideal date the user wants this entire phase completed.
 
-The resulting sentence reads naturally in the UI:
+sequenceNumber: An integer (1, 2, 3) to keep the phases in chronological order.
 
-"I want to practice this [ ☕ After Coffee ] around [ 9:30 AM ]."
+3. The Task (The Template / Definition)
+Relationship: Child of a Milestone.
 
-3. Updated "Today" Screen Visual Hierarchy
-With this addition, here is how the visual stack of your main dashboard looks from top to bottom:
+Properties:
 
-1. The Horizon Strip (Calendar Header)
-A clean, single-row week view. Today is actively highlighted.
+id: Unique number identifier.
 
-2. The Gate (Active One-Shot Milestone)
-A single, high-contrast block.
+milestoneId: Points directly back to its parent Milestone.
 
-Example: "Push Beta Build to Play Store"
+title: Text (e.g., "Practice Kotlin").
 
-Subtext: ⚠️ Postponing this will shift your "Launch App" timeline.
+isRepeatable: Yes/No switch.
 
-3. The Engine (Anchor-Based Practices)
-Group 1: ☀️ Morning Routine (Target: 8:00 AM)
+anchor: Text string (e.g., "After Morning Coffee").
 
-[ ] Read 10 pages of documentation
+suggestedTime: Target hour text (e.g., "09:30 AM").
 
-Group 2: ☕ After Morning Coffee (Target: 9:30 AM)
+suggestedDuration: An integer representing minutes (e.g., 30 or 45). This can be optional, as some one-shot tasks (like "Buy a domain") don't need a duration, while repeatable practices (like "Code") thrive on them.
 
-[ ] Code for 45 minutes
+4. The Task Instance (The Daily Reality Log)
+Relationship: Child of a Task.
 
-Group 3: 🌙 Wind Down (Target: 10:00 PM)
+Properties:
 
-[ ] Review tomorrow's focus milestone
+id: Unique number identifier.
 
-Moving Forward
-Since you want to hold off on the reflection page for now, you have a rock-solid blueprint for the core identity of the app: Execution (Today) driven by Anchors + Suggested Times, and Strategy (Journeys) driven by S.M.A.R.T. cascading milestones.
+taskId: Points back to the master Task definition.
 
-Are you ready to dive into the technical implementation—specifically how to structure the Room Database entities to support these anchor groups and user-defined suggested times?
+date: The specific calendar day this checkbox belongs to.
+
+status: Pending, Completed, Skipped, or Pushed to Tomorrow.
+
+How This Looks on the "Today" Screen View
+Because the Task Instance links back to the Task Template, Jetpack Compose can pull the title, anchor, suggestedTime, and your new suggestedDuration to build a beautifully informative card.
+
+Your UI list item can now look like this:
+
+[ ] Practice Kotlin
+
+☕ After Morning Coffee (Around 9:30 AM)
+
+⏱️ Duration: 30 mins
+
+This gives the user the perfect, friction-free snapshot of their commitment the moment they open the app.
+
+With this final piece of the data puzzle locked in, your architectural design document is officially complete. Are you ready to move on to setting up your Android project, or is there any other tracking property you want to add first?
