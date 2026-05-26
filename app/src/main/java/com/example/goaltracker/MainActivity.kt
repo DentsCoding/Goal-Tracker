@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import com.example.goaltracker.ui.theme.GoalTrackerTheme
+import com.example.goaltracker.ui_elements.MainScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,9 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GoalTrackerTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    GoalScreen()
-                }
+                MainScreen()
             }
         }
     }

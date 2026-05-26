@@ -1,8 +1,10 @@
-package com.example.goaltracker
+package com.example.goaltracker.view_models
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.goaltracker.AppDatabase
+import com.example.goaltracker.GoalEntity
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

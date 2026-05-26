@@ -3,6 +3,8 @@ package com.example.goaltracker
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+//TODO(): Create entities package and split those into their own files
+
 @Entity(tableName = "goals")
 data class GoalEntity(
     @PrimaryKey(autoGenerate = true)

@@ -1,4 +1,4 @@
-package com.example.goaltracker
+package com.example.goaltracker.ui_elements
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,35 +14,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.goaltracker.view_models.GoalViewModel
 
 @Composable
-fun GoalScreen(viewModel: GoalViewModel = viewModel()
-) {
-    val goalState by viewModel.goalState.collectAsState()
+fun GoalScreen(viewModel: GoalViewModel = viewModel()) {
 
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+
+    val goalState by viewModel.goalState.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
             value = title,
-            label = { Text("Goal title")},
-            onValueChange = { title = it}
+            onValueChange = { title = it },
+            label = { Text("Goal title") }
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = description,
-            label = { Text("Goal description")},
-            onValueChange = { description = it}
+            onValueChange = { description = it },
+            label = { Text("Goal description") }
         )
-        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
@@ -51,12 +51,12 @@ fun GoalScreen(viewModel: GoalViewModel = viewModel()
                 description = ""
             }
         ) {
-            Text("Add goal")
+            Text("Add Something")
         }
 
         LazyColumn() {
             items(goalState) { item ->
-                Column {
+                Column() {
                     Text(
                         text = item.title,
                         style = MaterialTheme.typography.titleLarge
@@ -65,6 +65,7 @@ fun GoalScreen(viewModel: GoalViewModel = viewModel()
                         text = item.description,
                         style = MaterialTheme.typography.bodyMedium
                     )
+
                 }
             }
         }

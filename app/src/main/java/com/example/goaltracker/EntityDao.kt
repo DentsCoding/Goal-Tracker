@@ -6,13 +6,15 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
+
+//TODO(): Create DAO package and split those into their own DAOs
 @Dao
 interface GoalDao{
     // goals
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createGoal(goal: GoalEntity)
 
-    @Query("SELECT * from goals")
+    @Query("SELECT * FROM goals")
     fun getAllGoals(): Flow<List<GoalEntity>>
 }
 
