@@ -3,43 +3,42 @@ package com.example.goaltracker
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "campaigns")
-data class CampaignEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+@Entity(tableName = "goals")
+data class GoalEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val title: String,
-    val hexColor: String
+    val description: String,
+    val creationDate: Long = System.currentTimeMillis()
 )
 
-
-@Entity(tableName = "routine_templates")
-data class RoutineTemplateEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val campaignId: Int, // links back to the campaign
-    val name: String,
-    val defaultDurationMinutes: Int,
-    val scheduledTime: String?,
-    val repeatDays: String
-)
-
-@Entity(tableName = "milestone_task")
-data class MilestoneTaskEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val campaignId: Int,
-    val milestoneTitle: String,
-    val taskName: String,
-    val dueDateEpochDays: Long?
-)
-
-@Entity(tableName = "milestone_task")
-data class DailyInstanceEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val campaignId: Int,
+@Entity(tableName = "milestones")
+data class MilestoneEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val parentId: Long,
     val title: String,
-    val isRoutine: Boolean,
-    val durationMinutes: Int,
-    val startTime: String?,
-    val dateEpochDays: Long,
-    val timeTrackedSeconds: Long = 0L,
-    val isCompleted: Boolean = false
+    val targetDate: Long = 0L,
+    val sequenceNumber: Int = 0
 )
 
+@Entity(tableName = "task_templates")
+data class TaskTemplateEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val milestoneId: Int,
+    val isRepeatable: Boolean,
+    val title: String,
+    val anchor: String,
+    val suggestedTime: String,
+    val suggestedDuration: Int = 0
+)
+
+@Entity(tableName = "tasks")
+data class TaskEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val templateId: Int,
+    val date: Long,
+    val status: TaskStatus = TaskStatus.PENDING
+)

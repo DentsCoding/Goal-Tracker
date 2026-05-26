@@ -2,15 +2,21 @@ package com.example.goaltracker
 
 import android.content.Context
 import androidx.room.Database
+import androidx.room.Entity
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [CampaignEntity::class, RoutineTemplateEntity::class, MilestoneTaskEntity::class, DailyInstanceEntity::class], version = 1)
+@Database(entities = [
+    GoalEntity::class,
+    MilestoneEntity::class,
+    TaskTemplateEntity::class,
+    TaskEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun campaignEntityDao(): CampaignEntity
-    abstract fun routineTemplateEntityDao(): RoutineTemplateEntity
-    abstract fun milestoneTaskEntityDao(): MilestoneTaskEntity
-    abstract fun dailyInstanceEntity(): DailyInstanceEntity
+
+    abstract fun goalDao(): GoalDao
+    abstract fun milestoneDao(): MilestoneDao
+    abstract fun taskTemplateDao(): TaskTemplateDao
+    abstract fun taskDao(): TaskDao
 
     companion object { // basically "static" keyword
         @Volatile // makes sure any modification to this variable is immediately seen
