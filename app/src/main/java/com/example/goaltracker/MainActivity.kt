@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GoalTrackerTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    
+                    GoalScreen()
                 }
             }
         }

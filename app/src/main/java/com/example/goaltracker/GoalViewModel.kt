@@ -19,9 +19,6 @@ class GoalViewModel(application: Application) : AndroidViewModel(application) {
             initialValue = emptyList()
         )
 
-    private val title = ""
-    private val description = ""
-
     fun addGoal(title: String, description: String) {
         viewModelScope.launch {
             val newGoal = GoalEntity(title = title, description = description)
