@@ -66,8 +66,137 @@ Your UI list item can now look like this:
 
 ☕ After Morning Coffee (Around 9:30 AM)
 
-⏱️ Duration: 30 mins
+⏱️ Duration: 30 min
 
 This gives the user the perfect, friction-free snapshot of their commitment the moment they open the app.
 
 With this final piece of the data puzzle locked in, your architectural design document is officially complete. Are you ready to move on to setting up your Android project, or is there any other tracking property you want to add first?
+
+
+
+----- next steps ---- (ai generated)
+
+1. The Database Architecture
+To make this work, we need to distinguish between:
+
+Templates: The recurring rules (e.g., "Every Mon, Wed, Fri").
+
+Overrides/Instances: Real entries in the database that represent a completed task or a modified instance of a template.
+
+One-Time Tasks: Standard single-instance tasks.
+
+Step 1: Update the TaskTemplateEntity
+We need to know which days a template repeats. An easy way to handle this in Room is to store the days of the week as a set of integers or a comma-separated string (e.g., "2,4,5" for Mon, Wed, Thu) using a Room TypeConverter.
+
+Kotlin
+@Entity(tableName = "task_templates")
+data class TaskTemplateEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val milestoneId: Long? = null, // Optional: link to a milestone
+    val title: String,
+    val cue: String,
+    val suggestedTime: String,      // e.g., "08:30"
+    val suggestedDuration: Int,     // in minutes
+    val repeatDays: List<Int>       // e.g., [2, 4, 5] (Calendar.MONDAY, etc.)
+)
+Step 2: Update the TaskEntity
+The TaskEntity will now serve two purposes: it represents one-time tasks AND overrides for repeating tasks.
+
+To link a real task to a template, we add a nullable templateId.
+
+Kotlin
+@Entity(tableName = "tasks")
+data class TaskEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val templateId: Long? = null,   // NULL for one-time tasks; populated if it overrides a template
+    val date: Long,                 // The specific day this task exists/was completed (Midnight timestamp)
+    val title: String,              // Copied from template or unique to one-time task
+    val cue: String,
+    val actualTime: String,         // Can diverge from template
+    val actualDuration: Int,        // Can diverge from template
+    val status: TaskStatus = TaskStatus.PENDING
+)
+2. How the Business Logic Works (The "Magic")
+Since you aren't saving every recurring task, your Repository layer has to do a little math when the UI asks for tasks on a specific date.
+
+Reading Data for the Calendar (UI Query)
+When the user opens the calendar on 2026-05-27 (a Wednesday):
+
+Query One-Time Tasks: Fetch all TaskEntity records where date == 2026-05-27 AND templateId IS NULL.
+
+Query Template Tasks: Fetch all TaskTemplateEntity records where repeatDays contains Wednesday.
+
+Query Template Overrides: Fetch all TaskEntity records where date == 2026-05-27 AND templateId IS NOT NULL.
+
+Merge Them in Code (Repository Level):
+
+Loop through your fetched Templates.
+
+Check if there is an Override (TaskEntity) with the matching templateId for today.
+
+If an override exists, display the override data (e.g., if it's marked COMPLETED or has a changed time).
+
+If no override exists, display a "Virtual Task" generated on the fly from the template with PENDING status.
+
+Writing Data (User Interaction)
+Scenario A: User edits the main Template
+
+Just update the TaskTemplateEntity. Because the UI generates virtual tasks on the fly, every future day will instantly reflect this change. Existing completed/overridden tasks in the database remain untouched because they have their own independent TaskEntity rows.
+
+Scenario B: User completes a recurring task for today
+
+Insert a new TaskEntity row into the database: templateId = X, date = today, status = COMPLETED, copying the time/duration from the template.
+
+Scenario C: User changes the time for just today's recurring task
+
+Insert a new TaskEntity row: templateId = X, date = today, actualTime = "09:30", status = PENDING.
+
+3. What the Repository Code Looks Like
+To give you a concrete idea of how to merge these in your Kotlin code, here is a simplified repository function:
+
+Kotlin
+class TaskRepository(private val taskDao: TaskDao, private val templateDao: TaskDao) {
+
+    suspend fun getTasksForDate(dateTimestamp: Long, dayOfWeek: Int): List<DisplayTask> {
+        // 1. Get concrete tasks/overrides from DB
+        val concreteTasks = taskDao.getTasksForDate(dateTimestamp)
+
+        // 2. Get active templates for this day of the week
+        val templates = templateDao.getTemplatesForDay(dayOfWeek)
+
+        val finalTasksList = mutableListOf<DisplayTask>()
+
+        // Add all one-time tasks and explicit overrides
+        concreteTasks.forEach { task ->
+            finalTasksList.add(DisplayTask.FromEntity(task))
+        }
+
+        // Add virtual tasks from templates IF they haven't been overridden yet
+        templates.forEach { template ->
+            val hasOverride = concreteTasks.any { it.templateId == template.id }
+            if (!hasOverride) {
+                finalTasksList.add(
+                    DisplayTask(
+                        id = -1, // Negative or temporary ID indicating it's virtual
+                        templateId = template.id,
+                        title = template.title,
+                        time = template.suggestedTime,
+                        duration = template.suggestedDuration,
+                        status = TaskStatus.PENDING,
+                        date = dateTimestamp
+                    )
+                )
+            }
+        }
+
+        return finalTasksList.sortedBy { it.time }
+    }
+}
+Summary of Benefits
+Zero Bloat: If a user has a habit for 5 years, it takes up exactly 1 row in the template table.
+
+Instant Updates: Changing the template instantly updates all future "virtual" tasks without running heavy DB update queries.
+
+Clean History: Completed items are safely locked in time as hard TaskEntity entries.

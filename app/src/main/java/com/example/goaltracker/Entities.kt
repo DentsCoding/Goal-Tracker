@@ -20,7 +20,7 @@ data class MilestoneEntity(
     val id: Long = 0,
     val parentId: Long,
     val title: String,
-    val targetDate: Long = 0L,
+    val targetDate: Long,
     val sequenceNumber: Int = 0
 )
 
@@ -28,19 +28,23 @@ data class MilestoneEntity(
 data class TaskTemplateEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val milestoneId: Int,
-    val isRepeatable: Boolean,
+    val milestoneId: Int? = null,
     val title: String,
-    val anchor: String,
+    val cue: String,
     val suggestedTime: String,
-    val suggestedDuration: Int = 0
+    val suggestedDuration: Int,
+    val repeatDays: List<Int>
 )
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val templateId: Int,
+    val templateId: Long? = null,
     val date: Long,
+    val title: String,
+    val cue: String,
+    val actualTime: String,
+    val actualDuration: Int,
     val status: TaskStatus = TaskStatus.PENDING
 )
