@@ -1,4 +1,4 @@
-package com.example.goaltracker.ui_elements
+package com.example.goaltracker.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon

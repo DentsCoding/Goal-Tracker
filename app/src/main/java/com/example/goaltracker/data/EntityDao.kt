@@ -1,4 +1,4 @@
-package com.example.goaltracker
+package com.example.goaltracker.data
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -26,12 +26,21 @@ interface MilestoneDao {
 
 @Dao
 interface TaskTemplateDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createTaskTemplate(taskTemplate: TaskTemplateEntity)
+
+    @Query("SELECT * FROM task_templates")
+    fun getAllTemplates(): Flow<List<TaskTemplateEntity>>
 }
 
 @Dao
 interface TaskDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createTask(task: TaskEntity)
+
+    @Query("SELECT * FROM tasks WHERE date = :date")
+    fun getTasksForDate(date: Long): Flow<List<TaskEntity>>
+
+    @Query("UPDATE tasks SET status = :newStatus WHERE id = :taskId")
+    fun updateTaskStatus(taskId: Long, newStatus: String)
 }

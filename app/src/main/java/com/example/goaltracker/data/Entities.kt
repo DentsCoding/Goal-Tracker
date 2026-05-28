@@ -1,7 +1,8 @@
-package com.example.goaltracker
+package com.example.goaltracker.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.goaltracker.TaskStatus
 
 //TODO(): Create entities package and split those into their own files
 
@@ -28,12 +29,12 @@ data class MilestoneEntity(
 data class TaskTemplateEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val milestoneId: Int? = null,
+    val milestoneId: Long? = null,
     val title: String,
     val cue: String,
     val suggestedTime: String,
     val suggestedDuration: Int,
-    val repeatDays: List<Int>
+    val repeatDays: String
 )
 
 @Entity(tableName = "tasks")
@@ -46,5 +47,6 @@ data class TaskEntity(
     val cue: String,
     val actualTime: String,
     val actualDuration: Int,
+    val isDetached: Boolean = false,
     val status: TaskStatus = TaskStatus.PENDING
 )

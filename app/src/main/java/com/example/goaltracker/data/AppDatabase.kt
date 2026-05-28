@@ -1,8 +1,7 @@
-package com.example.goaltracker
+package com.example.goaltracker.data
 
 import android.content.Context
 import androidx.room.Database
-import androidx.room.Entity
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
@@ -24,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-            // ?: (elivs operator) means if left hand side is null use right hand side
+            // ?: (elvis operator) means if left hand side is null use right hand side
             // synchronized also deals with race conditions
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
