@@ -1,46 +1,79 @@
 package com.example.goaltracker.data
 
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Relation
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 
-//TODO(): Create DAO package and split those into their own DAOs
+data class MilestoneWithTasks(
+    @Embedded val milestone: MilestoneEntity,
+    @Relation(
+        parentColumn = "milestoneId",    // The primary key in MilestoneEntity
+        entityColumn = "milestoneId" // The foreign key in TaskEntity
+    )
+    val tasks: List<TaskEntity>
+)
+data class GoalWithDetails(
+    @Embedded val goal: GoalEntity,
+
+    @Relation(
+        parentColumn = "goalId",
+        entityColumn = "goalId"
+    )
+    val timelines: List<TimelineEntity>,
+
+    @Relation(
+        entity = MilestoneEntity::class,
+        parentColumn = "goalId",
+        entityColumn = "goalId"
+    )
+    val milestones: List<MilestoneWithTasks>
+)
 @Dao
-interface GoalDao{
-    // goals
+interface GoalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createGoal(goal: GoalEntity)
+    suspend fun insertGoal(goal: GoalEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTimeline(timeline: TimelineEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMilestone(milestone: MilestoneEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTimelineMilestoneCrossRef(crossRef: TimelineMilestoneCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTask(task: TaskEntity)
+
+    @Transaction
     @Query("SELECT * FROM goals")
-    fun getAllGoals(): Flow<List<GoalEntity>>
-}
+    fun getAllGoalsWithDetails(): Flow<List<GoalWithDetails>>
 
-@Dao
-interface MilestoneDao {
-    @Insert
-    suspend fun createMilestone(milestone: MilestoneEntity)
-}
+    @Query("SELECT * FROM tasks WHERE milestoneId = :milestoneId")
+    fun getTasksForMilestone(milestoneId: String): Flow<List<TaskEntity>>
 
-@Dao
-interface TaskTemplateDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createTaskTemplate(taskTemplate: TaskTemplateEntity)
-
-    @Query("SELECT * FROM task_templates")
-    fun getAllTemplates(): Flow<List<TaskTemplateEntity>>
-}
-
-@Dao
-interface TaskDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createTask(task: TaskEntity)
-
-    @Query("SELECT * FROM tasks WHERE date = :date")
-    fun getTasksForDate(date: Long): Flow<List<TaskEntity>>
-
-    @Query("UPDATE tasks SET status = :newStatus WHERE id = :taskId")
-    fun updateTaskStatus(taskId: Long, newStatus: String)
+    // Combined transaction to guarantee atomic auto-creation
+    @Transaction
+    suspend fun createMilestoneWithTimeline(
+        milestone: MilestoneEntity,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) {
+        val timeline = TimelineEntity(
+            timelineId = java.util.UUID.randomUUID().toString(),
+            goalId = milestone.goalId,
+            startDate = startDate,
+            endDate = endDate
+        )
+        insertMilestone(milestone)
+        insertTimeline(timeline)
+        insertTimelineMilestoneCrossRef(TimelineMilestoneCrossRef(timeline.timelineId, milestone.milestoneId))
+    }
 }

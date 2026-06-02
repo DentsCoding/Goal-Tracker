@@ -1,52 +1,73 @@
 package com.example.goaltracker.data
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.example.goaltracker.TaskStatus
-
-//TODO(): Create entities package and split those into their own files
+import androidx.room.*
+import java.time.LocalDate
 
 @Entity(tableName = "goals")
 data class GoalEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey val goalId: String,
     val title: String,
-    val description: String,
-    val creationDate: Long = System.currentTimeMillis()
+    val startDate: LocalDate,
+    val endDate: LocalDate
 )
 
-@Entity(tableName = "milestones")
+@Entity(
+    tableName = "timelines",
+    foreignKeys = [ForeignKey(
+        entity = GoalEntity::class,
+        parentColumns = ["goalId"],
+        childColumns = ["goalId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class TimelineEntity(
+    @PrimaryKey val timelineId: String,
+    val goalId: String,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val isOverflowResolved: Boolean = false
+)
+
+@Entity(
+    tableName = "milestones",
+    foreignKeys = [ForeignKey(
+        entity = GoalEntity::class,
+        parentColumns = ["goalId"],
+        childColumns = ["goalId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
 data class MilestoneEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val parentId: Long,
-    val title: String,
-    val targetDate: Long,
-    val sequenceNumber: Int = 0
+    @PrimaryKey val milestoneId: String,
+    val goalId: String,
+    val title: String
 )
 
-@Entity(tableName = "task_templates")
-data class TaskTemplateEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val milestoneId: Long? = null,
-    val title: String,
-    val cue: String,
-    val suggestedTime: String,
-    val suggestedDuration: Int,
-    val repeatDays: String
+// Junction table because a Timeline can have multiple Milestones (due to moving tasks),
+// and a Milestone's tasks could theoretically span or be pushed into later Timelines.
+@Entity(
+    tableName = "timeline_milestone_cross_ref",
+    primaryKeys = ["timelineId", "milestoneId"]
+)
+data class TimelineMilestoneCrossRef(
+    val timelineId: String,
+    val milestoneId: String
 )
 
-@Entity(tableName = "tasks")
+@Entity(
+    tableName = "tasks",
+    foreignKeys = [ForeignKey(
+        entity = MilestoneEntity::class,
+        parentColumns = ["milestoneId"],
+        childColumns = ["milestoneId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
 data class TaskEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val templateId: Long? = null,
-    val date: Long,
+    @PrimaryKey val taskId: String,
+    val milestoneId: String,
     val title: String,
-    val cue: String,
-    val actualTime: String,
-    val actualDuration: Int,
-    val isDetached: Boolean = false,
-    val status: TaskStatus = TaskStatus.PENDING
+    val assignedDate: LocalDate,
+    val isCompleted: Boolean = false,
+    val isArchived: Boolean = false
 )
